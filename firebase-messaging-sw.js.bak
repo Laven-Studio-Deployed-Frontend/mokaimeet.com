@@ -1,0 +1,36 @@
+importScripts('https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.9.1/firebase-messaging.js');
+
+firebase.initializeApp({
+    apiKey: "AIzaSyBfgoTKfA17mZPShR4cHc8SAipdD1UVcPo",
+    authDomain: "laven-meet.firebaseapp.com",
+    projectId: "laven-meet",
+    storageBucket: "laven-meet.appspot.com",
+    messagingSenderId: "445914571680",
+    appId: "1:445914571680:web:19d07709b48973d1473ac5",
+    measurementId: "G-CTFYRTF2CQ"
+})
+
+const messaging = firebase.messaging();
+
+messaging.setBackgroundMessageHandler(function(payload) {
+    const promiseChain = clients
+         .matchAll({
+              type: "window",
+              includeUncontrolled: true,
+         })
+         .then((windowClients) => {
+              for (let i = 0; i < windowClients.length; i++) {
+                   const windowClient = windowClients[i];
+                   windowClient.postMessage(payload);
+              }
+         })
+         .then(() => {
+              return registration.showNotification("my notification title");
+         });
+    return promiseChain;
+});
+
+self.addEventListener("notificationclick", function(event) {
+    console.log(event);
+});
